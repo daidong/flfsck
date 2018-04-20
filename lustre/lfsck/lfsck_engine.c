@@ -689,6 +689,7 @@ static int lfsck_master_dir_engine(const struct lu_env *env,
 	struct lfsck_assistant_object	*lso	= NULL;
 	int				 rc;
 	__u16				 type;
+	unsigned long js;
 	ENTRY;
 
 	do {
@@ -744,17 +745,22 @@ static int lfsck_master_dir_engine(const struct lu_env *env,
 
 		/* The type in the @ent structure may has been overwritten,
 		 * so we need to pass the @type parameter independently. */
+		js = jiffies; //@dongdai
 		rc = lfsck_exec_dir(env, lfsck, lso, ent, type);
+		CDEBUG(D_LFSCK, "lfsck dir iteration on target " DFID", exec dirs, takes: %lu jiffies\n", PFID(lfsck_dto2fid(dir)), jiffies - js);
 		if (rc != 0 && bk->lb_param & LPF_FAILOUT)
 			GOTO(out, rc);
 
 checkpoint:
+		js = jiffies; //@dongdai
 		rc = lfsck_checkpoint(env, lfsck);
 		if (rc != 0 && bk->lb_param & LPF_FAILOUT)
 			GOTO(out, rc);
 
 		/* Rate control. */
 		lfsck_control_speed(lfsck);
+		CDEBUG(D_LFSCK, "lfsck dir iteration on target " DFID", checkpoing and speed control, takes: %lu jiffies\n", PFID(lfsck_dto2fid(dir)), jiffies - js);
+
 		if (unlikely(!thread_is_running(thread))) {
 			CDEBUG(D_LFSCK, "%s: scan dir exit for engine stop, "
 			       "parent "DFID", cookie %#llx\n",
@@ -770,8 +776,11 @@ checkpoint:
 			spin_unlock(&lfsck->li_lock);
 			GOTO(out, rc = -EINVAL);
 		}
-
+		
+		js = jiffies; //@dongdai
 		rc = iops->next(env, di);
+		CDEBUG(D_LFSCK, "lfsck object table iteration, get next dir, takes: %lu jiffies\n", jiffies - js);
+
 		if (rc < 0)
 			CDEBUG(D_LFSCK, "%s dir engine fail to locate next "
 			       "for the directory "DFID": rc = %d\n",
