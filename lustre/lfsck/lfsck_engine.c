@@ -826,6 +826,7 @@ static int lfsck_master_oit_engine(const struct lu_env *env,
 	struct seq_server_site	 *ss	= lfsck_dev_site(lfsck);
 	__u32			 idx	= lfsck_dev_idx(lfsck);
 	int			 rc;
+	unsigned long js;
 	ENTRY;
 
 	if (unlikely(ss == NULL))
@@ -959,20 +960,25 @@ static int lfsck_master_oit_engine(const struct lu_env *env,
 				goto checkpoint;
 		}
 
-		if (dt_object_exists(target))
-			rc = lfsck_exec_oit(env, lfsck, target);
+		if (dt_object_exists(target)){
+		  js = jiffies; //@dongdai
+		  rc = lfsck_exec_oit(env, lfsck, target);
+		  CDEBUG(D_LFSCK, "lfsck object table iteration on target " DFID", exec object, takes: %lu jiffies\n", PFID(fid), jiffies - js);
+		}
 
 		lfsck_object_put(env, target);
 		if (rc != 0 && bk->lb_param & LPF_FAILOUT)
 			RETURN(rc);
 
 checkpoint:
+		js = jiffies; //@dongdai
 		rc = lfsck_checkpoint(env, lfsck);
 		if (rc != 0 && bk->lb_param & LPF_FAILOUT)
 			RETURN(rc);
 
 		/* Rate control. */
 		lfsck_control_speed(lfsck);
+		CDEBUG(D_LFSCK, "lfsck object table iteration on target " DFID", checkpoint and speed-control, takes: %lu jiffies\n", PFID(fid), jiffies - js);
 
 		if (OBD_FAIL_CHECK(OBD_FAIL_LFSCK_FATAL1)) {
 			spin_lock(&lfsck->li_lock);
@@ -981,7 +987,10 @@ checkpoint:
 			RETURN(-EINVAL);
 		}
 
+		js = jiffies; //@dongdai
 		rc = iops->next(env, di);
+		CDEBUG(D_LFSCK, "lfsck object table iteration, get next item, takes: %lu jiffies\n", jiffies - js);
+
 		if (unlikely(rc > 0))
 			lfsck->li_oit_over = 1;
 		else if (likely(rc == 0))
