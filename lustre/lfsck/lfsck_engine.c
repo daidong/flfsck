@@ -39,7 +39,8 @@
 
 #include "lfsck_internal.h"
 
-unsigned long microseconds(){
+unsigned long microseconds(void)
+{
 	struct timeval t;
 	do_gettimeofday(&t);
 	return (unsigned long) (1000 * 1000) * t.tv_sec + (unsigned long) t.tv_usec;
