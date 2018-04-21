@@ -4,9 +4,7 @@ yum -y install xmlto asciidoc elfutils-libelf-devel zlib-devel binutils-devel ne
 yum -y install epel-release
 yum -y install pesign numactl-devel pciutils-devel ncurses-devel libselinux-devel
 cd ~
-git clone git://git.hpdd.intel.com/fs/lustre-release.git
-cd lustre-release
-git checkout e050996742723ccd842aa608d7f2825ca8289e58
+cp /proj/cloudincr-PG0/tarfiles/lustre-release ./
 sh autogen.sh
 
 mkdir -p ~/kernel/rpmbuild/{BUILD,RPMS,SOURCES,SPECS,SRPMS}
