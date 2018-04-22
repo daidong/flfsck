@@ -27,7 +27,8 @@ EQ_NUM=1
 
 
 
-DIR_NUM=`shuf -i 1-100 -n 1`
+#DIR_NUM=`shuf -i 1-100 -n 1`
+DIR_NUM=$INPUT_SIZE
 echo "Directories to create: $DIR_NUM"
 echo -e "Directory - No. of files"
 
