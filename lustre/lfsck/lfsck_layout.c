@@ -6253,6 +6253,7 @@ static int lfsck_orphan_it_key_rec(const struct lu_env *env,
 	return 0;
 }
 
+//@dongdai: this must be used in the second phase on OST Server
 const struct dt_index_operations lfsck_orphan_index_ops = {
 	.dio_lookup		= lfsck_orphan_index_lookup,
 	.dio_declare_insert	= lfsck_orphan_index_declare_insert,

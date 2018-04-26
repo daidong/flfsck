@@ -25,3 +25,26 @@ lctl set_param printk=+lfsck
 
 
 rpm -e kmod-lustre-osd-ldiskfs-2.9.0-1.el7.centos.x86_64 lustre-osd-ldiskfs-mount-2.9.0-1.el7.centos.x86_64 kmod-lustre-2.9.0-1.el7.centos.x86_64 kmod-lustre-tests-2.9.0-1.el7.centos.x86_64 lustre-2.9.0-1.el7.centos.x86_64 lustre-tests-2.9.0-1.el7.centos.x86_64 lustre-iokit-2.9.0-1.el7.centos.x86_64
+
+
+
+#
+sudo su
+mkfs.lustre --fsname=lustre --mgs --mdt --reformat /dev/sdb
+mkdir -p /lustre
+mount -t lustre /dev/sdb /lustre
+
+sudo su
+//this should be the ID of your OST
+mkfs.lustre --fsname=lustre --mgsnode=10.10.1.1@tcp0 --ost --index=1 --reformat /dev/sdb                                        
+mkdir -p /lustre
+mount -t lustre /dev/sdb /lustre
+
+sudo su
+mkdir -p /lustre
+mount -t lustre 10.10.1.1@tcp0:/lustre /lustre
+chown -R daidong:cloudincr-PG0 /lustre/    //this should be changed to your id:group
+chmod -R 775 /lustre/
+
+lctl lfsck_start -M lustre-MDT0000 -A -t all -r
+lctl debug_kernel /tmp/debug.lfsck

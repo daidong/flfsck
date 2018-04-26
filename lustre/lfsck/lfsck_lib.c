@@ -1801,6 +1801,7 @@ void lfsck_pos_dump(struct seq_file *m, struct lfsck_position *pos,
 	}
 }
 
+//@dongdai: call from lfsck_master_engine. init is false.
 void lfsck_pos_fill(const struct lu_env *env, struct lfsck_instance *lfsck,
 		    struct lfsck_position *pos, bool init)
 {

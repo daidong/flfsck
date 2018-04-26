@@ -614,6 +614,7 @@ static int lfsck_post(const struct lu_env *env, struct lfsck_instance *lfsck,
 	}
 
 	lfsck->li_time_last_checkpoint = cfs_time_current();
+	//@dongdai: checkpoint has 60 seconds interval?
 	lfsck->li_time_next_checkpoint = lfsck->li_time_last_checkpoint +
 				cfs_time_seconds(LFSCK_CHECKPOINT_INTERVAL);
 
@@ -849,6 +850,8 @@ static int lfsck_master_oit_engine(const struct lu_env *env,
 		RETURN(-EIO);
 
 	do {
+		//@dongdai
+		CDEBUG(D_LFSCK, "Start lfsck_master_oit_engine loops\n");
 		struct dt_object *target;
 
 		if (lfsck->li_di_dir != NULL) {
@@ -856,6 +859,8 @@ static int lfsck_master_oit_engine(const struct lu_env *env,
 			if (rc <= 0)
 				RETURN(rc);
 		}
+		//@dongdai:
+		CDEBUG(D_LFSCK, "Finish lfsck_master_dir_engine first.\n");
 
 		if (unlikely(lfsck->li_oit_over))
 			RETURN(1);
@@ -1100,6 +1105,10 @@ int lfsck_master_engine(void *args)
 	else
 		rc = 1;
 
+	//@dongdai:
+	CDEBUG(D_LFSCK, "LFSCK master engine finishes lfsck_master_oit_engine\n");
+
+	//@dongdai: it seems this function only call dio_it->stores()
 	lfsck_pos_fill(env, lfsck, &lfsck->li_pos_checkpoint, false);
 	CDEBUG(D_LFSCK, "LFSCK exit: oit_flags = %#x, dir_flags = %#x, "
 	       "oit_cookie = %llu, dir_cookie = %#llx, parent = "DFID
@@ -1109,10 +1118,16 @@ int lfsck_master_engine(void *args)
 	       PFID(&lfsck->li_pos_checkpoint.lp_dir_parent),
 	       current_pid(), rc);
 
-	if (!OBD_FAIL_CHECK(OBD_FAIL_LFSCK_CRASH))
+	if (!OBD_FAIL_CHECK(OBD_FAIL_LFSCK_CRASH)){
+		//@dongdai:
+		CDEBUG(D_LFSCK, "LFSCK master engine goes to branch lfsck_post()\n");
 		rc = lfsck_post(env, lfsck, rc);
-	else
+	}
+	else{
+		//@dongdai:
+		CDEBUG(D_LFSCK, "LFSCK master engine goes to branch lfsck_close_dir()\n");
 		lfsck_close_dir(env, lfsck, rc);
+	}
 
 fini_oit:
 	lfsck_di_oit_put(env, lfsck);
