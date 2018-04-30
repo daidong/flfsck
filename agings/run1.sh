@@ -40,7 +40,8 @@ do
       mkdir $DIR_NM
   fi
 
-  FILES_NUM=`shuf -i 1-100 -n 1`
+  #FILES_NUM=`shuf -i 1-100 -n 1`
+  FILES_NUM=100
   it=0
   while [ $it -le $FILES_NUM ]
   do

@@ -36,15 +36,16 @@ mount -t lustre /dev/sdb /lustre
 
 sudo su
 //this should be the ID of your OST
-mkfs.lustre --fsname=lustre --mgsnode=10.10.1.1@tcp0 --ost --index=1 --reformat /dev/sdb                                        
+mkfs.lustre --fsname=lustre --mgsnode=10.10.1.1@tcp0 --ost --index=3 --reformat /dev/sdb                                        
 mkdir -p /lustre
 mount -t lustre /dev/sdb /lustre
 
 sudo su
 mkdir -p /lustre
 mount -t lustre 10.10.1.1@tcp0:/lustre /lustre
-chown -R daidong:cloudincr-PG0 /lustre/    //this should be changed to your id:group
+chown -R daidong:cloudincr-PG0 /lustre/
 chmod -R 775 /lustre/
 
 lctl lfsck_start -M lustre-MDT0000 -A -t all -r
-lctl debug_kernel /tmp/debug.lfsck
+lctl debug_kernel /tmp/debug-log-3.lfsck
+lctl lfsck_query -M lustre-MDT0000
