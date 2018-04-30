@@ -848,10 +848,10 @@ static int lfsck_master_oit_engine(const struct lu_env *env,
 		RETURN(-EIO);
 
 	do {
+		struct dt_object *target;
+
 		//@dongdai
 		js = microseconds(); //@dongdai
-
-		struct dt_object *target;
 
 		if (lfsck->li_di_dir != NULL) {
 			rc = lfsck_master_dir_engine(env, lfsck);

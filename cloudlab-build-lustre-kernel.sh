@@ -4,7 +4,7 @@ yum -y install xmlto asciidoc elfutils-libelf-devel zlib-devel binutils-devel ne
 yum -y install epel-release
 yum -y install pesign numactl-devel pciutils-devel ncurses-devel libselinux-devel
 cd ~
-git clone https://github.com/daidong/flfsck.git
+#git clone https://github.com/daidong/flfsck.git
 mv flfsck lustre-release
 cd lustre-release
 sh autogen.sh

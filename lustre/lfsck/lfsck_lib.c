@@ -2893,6 +2893,8 @@ static int lfsck_start_all(const struct lu_env *env,
 	laia->laia_shared = 1;
 
 	down_read(&ltds->ltd_rw_sem);
+
+	//@dongdai: this loop is starting LFSCK on all MDTs and OSTs
 	cfs_foreach_bit(ltds->ltd_tgts_bitmap, idx) {
 		ltd = lfsck_tgt_get(ltds, idx);
 		LASSERT(ltd != NULL);
@@ -2901,6 +2903,16 @@ static int lfsck_start_all(const struct lu_env *env,
 		ltd->ltd_layout_done = 0;
 		ltd->ltd_namespace_done = 0;
 		ltd->ltd_synced_failures = 0;
+
+		//@dongdai. 
+		/**
+		 * ltd->ltd_exp is 
+		 * Export structure. Represents target-side of connection in portals.
+ 		 * Also used in Lustre to connect between layers on the same node when
+ 		 * there is no network-connection in-between.
+ 		 * For every connected client there is an export structure on the server
+ 		 * attached to the same obd device.
+ 		*/
 		rc = lfsck_async_request(env, ltd->ltd_exp, lr, set,
 					 lfsck_async_interpret, laia,
 					 LFSCK_NOTIFY);
@@ -3162,6 +3174,8 @@ trigger:
 		GOTO(out, rc = PTR_ERR(lta));
 
 	__lfsck_set_speed(lfsck, bk->lb_speed_limit);
+
+	//@dongdai: here to start lfsck_master_engine as a kernel thread;
 	task = kthread_run(lfsck_master_engine, lta, "lfsck");
 	if (IS_ERR(task)) {
 		rc = PTR_ERR(task);
