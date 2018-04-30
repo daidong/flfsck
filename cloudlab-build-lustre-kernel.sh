@@ -4,7 +4,9 @@ yum -y install xmlto asciidoc elfutils-libelf-devel zlib-devel binutils-devel ne
 yum -y install epel-release
 yum -y install pesign numactl-devel pciutils-devel ncurses-devel libselinux-devel
 cd ~
-cp /proj/cloudincr-PG0/tarfiles/lustre-release ./
+git clone https://github.com/daidong/flfsck.git
+mv flfsck lustre-release
+cd lustre-release
 sh autogen.sh
 
 mkdir -p ~/kernel/rpmbuild/{BUILD,RPMS,SOURCES,SPECS,SRPMS}

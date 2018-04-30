@@ -3644,8 +3644,9 @@ lfsck_layout_slave_notify_master(const struct lu_env *env,
 	int				  rc;
 	ENTRY;
 
-	CDEBUG(D_LFSCK, "%s: layout LFSCK slave notifies master\n",
-	       lfsck_lfsck2name(com->lc_lfsck));
+	//@dongdai
+	CDEBUG(D_LFSCK, "%s: layout LFSCK slave notifies master, event: %d, result: %d\n",
+	       lfsck_lfsck2name(com->lc_lfsck), event, result);
 
 	set = ptlrpc_prep_set();
 	if (set == NULL)
