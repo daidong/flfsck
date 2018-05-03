@@ -4978,9 +4978,11 @@ static int lfsck_layout_slave_double_scan(const struct lu_env *env,
 				cfs_time_seconds(LFSCK_CHECKPOINT_INTERVAL);
 
 	while (1) {
+		//@dongdai: wait for 30 seconds. Why?
 		struct l_wait_info lwi = LWI_TIMEOUT(cfs_time_seconds(30),
 						     NULL, NULL);
 
+		//@dongdai: query master
 		rc = lfsck_layout_slave_query_master(env, com);
 		if (list_empty(&llsd->llsd_master_list)) {
 			if (unlikely(!thread_is_running(thread)))

@@ -701,7 +701,7 @@ static int lfsck_master_dir_engine(const struct lu_env *env,
 	ENTRY;
 
 	do {
-		js = microseconds(); //@dongdai
+		//js = microseconds(); //@dongdai
 		
 		if (CFS_FAIL_TIMEOUT(OBD_FAIL_LFSCK_DELAY2, cfs_fail_val) &&
 		    unlikely(!thread_is_running(thread))) {
@@ -791,7 +791,7 @@ checkpoint:
 			       lfsck_lfsck2name(lfsck),
 			       PFID(&lfsck->li_pos_current.lp_dir_parent), rc);
 		
-		CDEBUG(D_LFSCK, "lfsck dir iteration " DFID", one loop takes: %lu microseconds\n", PFID(lfsck_dto2fid(dir)), microseconds() - js);
+		//CDEBUG(D_LFSCK, "lfsck dir iteration " DFID", one loop takes: %lu microseconds\n", PFID(lfsck_dto2fid(dir)), microseconds() - js);
 	} while (rc == 0);
 
 	if (rc > 0 && !lfsck->li_oit_over)
@@ -851,7 +851,7 @@ static int lfsck_master_oit_engine(const struct lu_env *env,
 		struct dt_object *target;
 
 		//@dongdai
-		js = microseconds(); //@dongdai
+		//js = microseconds(); //@dongdai
 
 		if (lfsck->li_di_dir != NULL) {
 			rc = lfsck_master_dir_engine(env, lfsck);
@@ -1019,7 +1019,7 @@ checkpoint:
 			RETURN(0);
 		}
 
-		CDEBUG(D_LFSCK, "lfsck object table iteration on target " DFID", one loop takes: %lu microseconds\n", PFID(fid), microseconds() - js);
+		//CDEBUG(D_LFSCK, "lfsck object table iteration on target " DFID", one loop takes: %lu microseconds\n", PFID(fid), microseconds() - js);
 	} while (rc == 0 || lfsck->li_di_dir != NULL);
 
 	RETURN(rc);
