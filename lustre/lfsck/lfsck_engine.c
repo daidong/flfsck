@@ -697,7 +697,7 @@ static int lfsck_master_dir_engine(const struct lu_env *env,
 	struct lfsck_assistant_object	*lso	= NULL;
 	int				 rc;
 	__u16				 type;
-	unsigned long js;
+	//unsigned long js;
 	ENTRY;
 
 	do {
@@ -841,7 +841,7 @@ static int lfsck_master_oit_engine(const struct lu_env *env,
 	struct seq_server_site	 *ss	= lfsck_dev_site(lfsck);
 	__u32			 idx	= lfsck_dev_idx(lfsck);
 	int			 rc;
-	unsigned long js;
+	//unsigned long js;
 	ENTRY;
 
 	if (unlikely(ss == NULL))
