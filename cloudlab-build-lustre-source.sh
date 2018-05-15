@@ -47,5 +47,9 @@ chown -R daidong:cloudincr-PG0 /lustre/
 chmod -R 775 /lustre/
 
 lctl lfsck_start -M lustre-MDT0000 -A -t all -r
-lctl debug_kernel /tmp/debug-log-3.lfsck
+lctl debug_kernel /tmp/debug-lfsck.log
 lctl lfsck_query -M lustre-MDT0000
+
+
+MDT: lctl get_param mdd.*.lfsck_speed_limit
+OST: lctl get_param obdfilter.*.speed_limit

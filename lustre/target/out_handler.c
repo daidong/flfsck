@@ -239,6 +239,7 @@ out_unlock:
 	RETURN(rc);
 }
 
+//@dongdai: actual actions on OSTS to serve do_declare_xattr_get() from osp component
 static int out_xattr_get(struct tgt_session_info *tsi)
 {
 	const struct lu_env	   *env = tsi->tsi_env;

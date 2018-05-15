@@ -4212,6 +4212,7 @@ static int lfsck_layout_scan_stripes(const struct lu_env *env,
 		if (unlikely(lovea_slot_is_dummy(objs)))
 			continue;
 
+		//@dongdai: bk->lb_async_windows: /* The windows size for async requests pipeline. */
 		l_wait_event(mthread->t_ctl_waitq,
 			     lad->lad_prefetched < bk->lb_async_windows ||
 			     !thread_is_running(mthread) ||
@@ -4225,9 +4226,9 @@ static int lfsck_layout_scan_stripes(const struct lu_env *env,
 		if (unlikely(lfsck_is_dead_obj(parent)))
 			GOTO(out, rc = 0);
 
-		ostid_le_to_cpu(&objs->l_ost_oi, oi);
-		index = le32_to_cpu(objs->l_ost_idx);
-		rc = ostid_to_fid(fid, oi, index);
+		ostid_le_to_cpu(&objs->l_ost_oi, oi); //@dongdai: lov_ost_data_v1->l_ost_oi:  /* OST object ID */
+		index = le32_to_cpu(objs->l_ost_idx); //@dongdai: lov_ost_data_v1->l_ost_idx: /* OST index in LOV (lov_tgt_desc->tgts) */
+		rc = ostid_to_fid(fid, oi, index); //@dongdai: Unpack an OST object id/seq (group) into a FID.
 		if (rc != 0) {
 			CDEBUG(D_LFSCK, "%s: get invalid layout EA for "DFID
 			       ": "DOSTID", idx:%u\n", lfsck_lfsck2name(lfsck),
@@ -4412,6 +4413,7 @@ again:
 	    lfsck_is_dead_obj(obj))
 		GOTO(out, rc = 0);
 
+	//@dongdai: get lovea metadata of this object
 	rc = lfsck_layout_get_lovea(env, obj, buf);
 	if (rc <= 0)
 		GOTO(out, rc);
@@ -4424,7 +4426,7 @@ again:
 	if (rc != 0)
 		GOTO(out, rc);
 
-	if (memcmp(oi, &lmm->lmm_oi, sizeof(*oi)) == 0)
+	if (memcmp(oi, &lmm->lmm_oi, sizeof(*oi)) == 0) /* lmm_oi: LOV object ID */
 		GOTO(out, stripe = true);
 
 	/* Inconsistent lmm_oi, should be repaired. */

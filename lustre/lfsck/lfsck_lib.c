@@ -3501,6 +3501,7 @@ int lfsck_register(const struct lu_env *env, struct dt_device *key,
 	struct lfsck_instance	*lfsck;
 	struct dt_object	*root  = NULL;
 	struct dt_object	*obj   = NULL;
+	//@dongdai: when register the lfsck, there is already a fid? what is it?
 	struct lu_fid		*fid   = &lfsck_env_info(env)->lti_fid;
 	int			 rc;
 	ENTRY;
