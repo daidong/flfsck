@@ -45,7 +45,7 @@ do
   it=0
   while [ $it -le $FILES_NUM ]
   do
-    blk_cnt=`shuf -i 1-750 -n 1`
+    blk_cnt=`shuf -i 1-5 -n 1`
     
 
     THISDATE=`date +"%y%m%d"`
