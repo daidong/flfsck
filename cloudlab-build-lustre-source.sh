@@ -1,4 +1,11 @@
 #!/bin/sh
+yum -y groupinstall "Development Tools"
+cd ~
+git clone https://github.com/daidong/flfsck.git
+mv flfsck lustre-release
+cd lustre-release
+sh autogen.sh
+
 cd ~/lustre-release/
 ./configure
 make rpms
@@ -16,6 +23,7 @@ yum update -y e2fsprogs
 #For resolving Conflict with lustre-client-2.9.0-1.el7.x86_64 error
 # rpm -qa|grep ‘client’
 rpm -e lustre-client-2.9.0-1.el7.x86_64
+cd ~/lustre-release/
 yum -y localinstall {kmod-lustre-osd-ldiskfs,kmod-lustre,lustre,lustre-osd-ldiskfs-mount,lustre-iokit,lustre-tests,kmod-lustre-tests}-2.9.0-1.el7.centos.x86_64.rpm
 echo 'options lnet networks=tcp0(p2p2)' > /etc/modprobe.d/lustre.conf
 depmod -a

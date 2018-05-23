@@ -34,7 +34,7 @@ echo -e "Directory - No. of files"
 
 for i in $(seq -f "%04g" 1 $DIR_NUM)
 do
-    DIR_NM=$MNT_PNT/$i
+  DIR_NM=$MNT_PNT/$i
 
   if [ ! -d "$DIR_NM" ]; then
       mkdir $DIR_NM
@@ -45,7 +45,7 @@ do
   it=0
   while [ $it -le $FILES_NUM ]
   do
-    blk_cnt=`shuf -i 1-5 -n 1`
+    blk_cnt=`shuf -i 1-750 -n 1`
     
 
     THISDATE=`date +"%y%m%d"`
