@@ -186,7 +186,7 @@ struct scrub_file {
 	__u8    sf_oi_bitmap[SCRUB_OI_BITMAP_SIZE];
 };
 
-struct osd_scrub {
+struct –osd_scrub {
 	struct lvfs_run_ctxt    os_ctxt;
 	struct ptlrpc_thread    os_thread;
 	struct osd_idmap_cache  os_oic;
@@ -224,6 +224,7 @@ struct osd_scrub {
 
 	/* How many objects have been checked since last checkpoint. */
 	__u32			os_new_checked;
+	/* @dongdai: inode position that current IO scrub is working on */
 	__u32			os_pos_current;
 	__u32			os_start_flags;
 	unsigned int		os_in_prior:1, /* process inconsistent item

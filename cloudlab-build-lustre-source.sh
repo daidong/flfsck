@@ -44,7 +44,7 @@ mount -t lustre /dev/sdb /lustre
 
 sudo su
 //this should be the ID of your OST
-mkfs.lustre --fsname=lustre --mgsnode=10.10.1.1@tcp0 --ost --index=3 --reformat /dev/sdb                                        
+mkfs.lustre --fsname=lustre --mgsnode=10.10.1.1@tcp0 --ost --index=1 --reformat /dev/sdb                                   
 mkdir -p /lustre
 mount -t lustre /dev/sdb /lustre
 

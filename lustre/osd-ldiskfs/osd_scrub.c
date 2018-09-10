@@ -1476,7 +1476,7 @@ static int osd_otable_it_preload(const struct lu_env *env,
 		spin_unlock(&scrub->os_lock);
 	}
 
-	RETURN(rc < 0 ? rc : ooc->ooc_cached_items);
+	RETURN(rc < 0 ? rc : ooc->);
 }
 
 static int osd_scrub_main(void *args)
