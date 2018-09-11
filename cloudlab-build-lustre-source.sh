@@ -44,7 +44,7 @@ mount -t lustre /dev/sdb /lustre
 
 sudo su
 //this should be the ID of your OST
-mkfs.lustre --fsname=lustre --mgsnode=10.10.1.1@tcp0 --ost --index=1 --reformat /dev/sdb                                   
+mkfs.lustre --fsname=lustre --mgsnode=10.10.1.1@tcp0 --ost --index=2 --reformat /dev/sdb                                   
 mkdir -p /lustre
 mount -t lustre /dev/sdb /lustre
 
@@ -53,6 +53,7 @@ mkdir -p /lustre
 mount -t lustre 10.10.1.1@tcp0:/lustre /lustre
 chown -R daidong:cloudincr-PG0 /lustre/
 chmod -R 775 /lustre/
+yum install mpich-3.0.i686
 
 lctl lfsck_start -M lustre-MDT0000 -A -t all -r
 lctl debug_kernel /tmp/debug-lfsck.log
@@ -61,3 +62,7 @@ lctl lfsck_query -M lustre-MDT0000
 
 MDT: lctl get_param mdd.*.lfsck_speed_limit
 OST: lctl get_param obdfilter.*.speed_limit
+
+
+# to get network and I/O data
+yum install sysstat

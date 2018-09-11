@@ -186,7 +186,7 @@ struct scrub_file {
 	__u8    sf_oi_bitmap[SCRUB_OI_BITMAP_SIZE];
 };
 
-struct –osd_scrub {
+struct osd_scrub {
 	struct lvfs_run_ctxt    os_ctxt;
 	struct ptlrpc_thread    os_thread;
 	struct osd_idmap_cache  os_oic;

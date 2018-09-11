@@ -3927,6 +3927,9 @@ static void lfsck_namespace_close_dir(const struct lu_env *env,
 		wakeup = true;
 
 	lad->lad_prefetched++;
+	//@dongdai-thread
+	CDEBUG(D_LFSCK, "[namespace-mthread-add-close-dir] [lad prefetched: %d]\n", lad->lad_prefetched);
+		
 	spin_unlock(&lad->lad_lock);
 	if (wakeup)
 		wake_up_all(&lad->lad_thread.t_ctl_waitq);
@@ -4238,6 +4241,9 @@ static int lfsck_namespace_exec_dir(const struct lu_env *env,
 		wakeup = true;
 
 	lad->lad_prefetched++;
+	//@dongdai-thread
+	CDEBUG(D_LFSCK, "[namespace-mthread-add-exec-dir] [lad prefetched: %d]\n", lad->lad_prefetched);
+	
 	spin_unlock(&lad->lad_lock);
 	if (wakeup)
 		wake_up_all(&lad->lad_thread.t_ctl_waitq);

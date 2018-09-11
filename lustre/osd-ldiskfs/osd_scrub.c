@@ -1187,6 +1187,8 @@ static int osd_preload_exec(struct osd_thread_info *info,
 
 	if (rc == 0) {
 		ooc->ooc_cached_items++;
+		//@dongdai-thread
+		CDEBUG(D_LFSCK, "[load] [ooc cache size: %d]\n", ooc->ooc_cached_items);
 		ooc->ooc_producer_idx = (ooc->ooc_producer_idx + 1) &
 					~OSD_OTABLE_IT_CACHE_MASK;
 	}
@@ -2807,6 +2809,8 @@ again:
 
 	if (ooc->ooc_cached_items > 0) {
 		ooc->ooc_cached_items--;
+		//@dongdai-thread: 
+		CDEBUG(D_LFSCK, "[use/next] [ooc cache size: %d]\n", ooc->ooc_cached_items);
 		ooc->ooc_consumer_idx = (ooc->ooc_consumer_idx + 1) &
 					~OSD_OTABLE_IT_CACHE_MASK;
 		RETURN(0);

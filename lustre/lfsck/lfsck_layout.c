@@ -4331,11 +4331,14 @@ static int lfsck_layout_scan_stripes(const struct lu_env *env,
 			RETURN(lad->lad_assistant_status);
 		}
 
+		//@dongdai: llr->llr_lar.lar_list is the new item to be inserted.
 		list_add_tail(&llr->llr_lar.lar_list, &lad->lad_req_list);
 		if (lad->lad_prefetched == 0)
 			wakeup = true;
 
 		lad->lad_prefetched++;
+		//@dongdai-thread
+		CDEBUG(D_LFSCK, "[layout-mthread-add] [lad prefetched: %d]\n", lad->lad_prefetched);
 		spin_unlock(&lad->lad_lock);
 		if (wakeup)
 			wake_up_all(&athread->t_ctl_waitq);

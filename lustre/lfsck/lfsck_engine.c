@@ -1644,6 +1644,9 @@ int lfsck_assistant_engine(void *args)
 			spin_lock(&lad->lad_lock);
 			list_del_init(&lar->lar_list);
 			lad->lad_prefetched--;
+			//@dongdai-thread
+			CDEBUG(D_LFSCK, "[athread remove %s] [lad prefetched: %d]\n", lad->lad_name, lad->lad_prefetched);
+	
 			/* Wake up the main engine thread only when the list
 			 * is empty or half of the prefetched items have been
 			 * handled to avoid too frequent thread schedule. */
@@ -1779,6 +1782,8 @@ cleanup:
 				 lar_list);
 		list_del_init(&lar->lar_list);
 		lad->lad_prefetched--;
+		//@dongdai-thread
+		CDEBUG(D_LFSCK, "[athread remove %s - cleanup] [lad prefetched: %d]\n", lad->lad_name, lad->lad_prefetched);
 		spin_unlock(&lad->lad_lock);
 		lao->la_req_fini(env, lar);
 		spin_lock(&lad->lad_lock);
