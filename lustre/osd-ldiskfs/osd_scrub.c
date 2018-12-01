@@ -1287,6 +1287,9 @@ static int osd_inode_iteration(struct osd_thread_info *info,
 	if (preload)
 		goto full;
 
+	CDEBUG(D_LFSCK, "@dongdai: in osd_inode_iteration, again check I/O Scrub Configuration os_partial_scan=%d, os_in_join=%d\n",
+				scrub->os_partial_scan, scrub->os_in_join);
+
 	while (scrub->os_partial_scan && !scrub->os_in_join) {
 		struct osd_idmap_cache *oic = NULL;
 
@@ -1374,11 +1377,15 @@ full:
 
 	noslot = false;
 	if (!preload) {
+		CDEBUG(D_LFSCK, "@dongdai: osd_inode_iteration is not preloading\n");
+
 		next = osd_scrub_next;
 		exec = osd_scrub_exec;
 		pos = &scrub->os_pos_current;
 		count = &scrub->os_new_checked;
 	} else {
+		CDEBUG(D_LFSCK, "@dongdai: osd_inode_iteration is preloading\n");
+
 		struct osd_otable_cache *ooc = &dev->od_otable_it->ooi_cache;
 
 		next = osd_preload_next;
@@ -1503,6 +1510,9 @@ static int osd_scrub_main(void *args)
 		       osd_scrub2name(scrub), rc);
 		GOTO(out, rc);
 	}
+
+	CDEBUG(D_LFSCK, "@dongdai: check I/O Scrub Configuration os_full_speed = %d, os_partial_scan=%d\n",
+				scrub->os_full_speed, scrub->os_partial_scan);
 
 	if (!scrub->os_full_speed && !scrub->os_partial_scan) {
 		struct l_wait_info lwi = { 0 };
