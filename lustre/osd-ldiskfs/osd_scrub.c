@@ -1384,9 +1384,9 @@ full:
 		pos = &scrub->os_pos_current;
 		count = &scrub->os_new_checked;
 	} else {
-		CDEBUG(D_LFSCK, "@dongdai: osd_inode_iteration is preloading\n");
-
 		struct osd_otable_cache *ooc = &dev->od_otable_it->ooi_cache;
+		
+		CDEBUG(D_LFSCK, "@dongdai: osd_inode_iteration is preloading\n");
 
 		next = osd_preload_next;
 		exec = osd_preload_exec;
