@@ -1284,6 +1284,9 @@ static int osd_inode_iteration(struct osd_thread_info *info,
 	ENTRY;
 
 	param.sb = osd_sb(dev);
+
+	CDEBUG(D_LFSCK, "@dongdai: in osd_inode_iteration...\n");
+
 	if (preload)
 		goto full;
 
@@ -1367,6 +1370,7 @@ wait:
 
 full:
 	if (!preload) {
+		CDEBUG(D_LFSCK, "@dongdai: osd_inode_iteration is not preloading, waiting for event\n");
 		l_wait_event(thread->t_ctl_waitq,
 			     !thread_is_running(thread) || !scrub->os_in_join,
 			     &lwi);
@@ -1396,6 +1400,10 @@ full:
 	limit = le32_to_cpu(LDISKFS_SB(param.sb)->s_es->s_inodes_count);
 
 	while (*pos <= limit && *count < max) {
+		if (!preload) {
+			CDEBUG(D_LFSCK, "@dongdai: osd_inode_iteration (no preload) while loop: pos:%u, count:%u\n", (*pos), (*count));
+		}
+
 		struct osd_idmap_cache *oic = NULL;
 		struct ldiskfs_group_desc *desc;
 
@@ -1511,6 +1519,7 @@ static int osd_scrub_main(void *args)
 		GOTO(out, rc);
 	}
 
+	//@dongdai: a test run output is "check I/O Scrub Configuration os_full_speed = 0, os_partial_scan=0"
 	CDEBUG(D_LFSCK, "@dongdai: check I/O Scrub Configuration os_full_speed = %d, os_partial_scan=%d\n",
 				scrub->os_full_speed, scrub->os_partial_scan);
 
