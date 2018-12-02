@@ -1400,12 +1400,12 @@ full:
 	limit = le32_to_cpu(LDISKFS_SB(param.sb)->s_es->s_inodes_count);
 
 	while (*pos <= limit && *count < max) {
+		struct osd_idmap_cache *oic = NULL;
+		struct ldiskfs_group_desc *desc;
+
 		if (!preload) {
 			CDEBUG(D_LFSCK, "@dongdai: osd_inode_iteration (no preload) while loop: pos:%u, count:%u\n", (*pos), (*count));
 		}
-
-		struct osd_idmap_cache *oic = NULL;
-		struct ldiskfs_group_desc *desc;
 
 		param.bg = (*pos - 1) / LDISKFS_INODES_PER_GROUP(param.sb);
 		desc = ldiskfs_get_group_desc(param.sb, param.bg, NULL);
