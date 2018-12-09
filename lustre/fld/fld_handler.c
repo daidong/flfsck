@@ -196,7 +196,7 @@ out:
 EXPORT_SYMBOL(fld_update_from_controller);
 
 /**
- * Lookup sequece in local cache/fldb.
+ * Lookup sequence in local cache/fldb.
  **/
 int fld_local_lookup(const struct lu_env *env, struct lu_server_fld *fld,
 		     u64 seq, struct lu_seq_range *range)

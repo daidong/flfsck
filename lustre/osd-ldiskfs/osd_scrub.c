@@ -1004,6 +1004,8 @@ static int osd_scrub_next(struct osd_thread_info *info, struct osd_device *dev,
 	struct lu_fid	     *fid;
 	struct osd_inode_id  *lid;
 	int		      rc;
+	//@dongdai
+	cfs_time_t t1, t2;
 
 	if (OBD_FAIL_CHECK(OBD_FAIL_OSD_SCRUB_DELAY) && cfs_fail_val > 0) {
 		struct l_wait_info lwi;
@@ -1056,8 +1058,12 @@ static int osd_scrub_next(struct osd_thread_info *info, struct osd_device *dev,
 	*oic = &scrub->os_oic;
 	fid = &(*oic)->oic_fid;
 	lid = &(*oic)->oic_lid;
+
+	t1 = cfs_time_current();
 	rc = osd_iit_iget(info, dev, fid, lid,
 			  scrub->os_pos_current, param->sb, true);
+	t2 = cfs_time_current();
+	CDEBUG(D_LFSCK, "@dongdai:M scrub_main->osd_iit_iget(%u) takes %lu jitters\n", scrub->os_pos_current, ((unsigned long) (t2-t1)));
 	return rc;
 }
 
@@ -1069,6 +1075,8 @@ static int osd_preload_next(struct osd_thread_info *info,
 	struct osd_scrub	*scrub;
 	struct ptlrpc_thread	*thread;
 	int			 rc;
+	//@dongdai
+	cfs_time_t t1, t2;
 
 	rc = osd_iit_next(param, &ooc->ooc_pos_preload);
 	if (rc != 0)
@@ -1080,10 +1088,14 @@ static int osd_preload_next(struct osd_thread_info *info,
 	    ooc->ooc_pos_preload >= scrub->os_pos_current)
 		return SCRUB_NEXT_EXIT;
 
+	t1 = cfs_time_current();
 	rc = osd_iit_iget(info, dev,
 			  &ooc->ooc_cache[ooc->ooc_producer_idx].oic_fid,
 			  &ooc->ooc_cache[ooc->ooc_producer_idx].oic_lid,
 			  ooc->ooc_pos_preload, param->sb, false);
+	t2 = cfs_time_current();
+	CDEBUG(D_LFSCK, "@dongdai:M osd_preload->osd_iit_iget(%u) takes %lu jitters\n", ooc->ooc_pos_preload, ((unsigned long) (t2-t1)));
+
 	/* If succeed, it needs to move forward; otherwise up layer LFSCK may
 	 * ignore the failure, so it still need to skip the inode next time. */
 	ooc->ooc_pos_preload = param->gbase + ++(param->offset);
@@ -1285,13 +1297,14 @@ static int osd_inode_iteration(struct osd_thread_info *info,
 
 	param.sb = osd_sb(dev);
 
-	CDEBUG(D_LFSCK, "@dongdai: in osd_inode_iteration...\n");
+	//CDEBUG(D_LFSCK, "@dongdai: in osd_inode_iteration...\n");
 
 	if (preload)
 		goto full;
 
-	CDEBUG(D_LFSCK, "@dongdai: in osd_inode_iteration, again check I/O Scrub Configuration os_partial_scan=%d, os_in_join=%d\n",
+	/*CDEBUG(D_LFSCK, "@dongdai: in osd_inode_iteration, again check I/O Scrub Configuration os_partial_scan=%d, os_in_join=%d\n",
 				scrub->os_partial_scan, scrub->os_in_join);
+	*/
 
 	while (scrub->os_partial_scan && !scrub->os_in_join) {
 		struct osd_idmap_cache *oic = NULL;
@@ -1370,7 +1383,7 @@ wait:
 
 full:
 	if (!preload) {
-		CDEBUG(D_LFSCK, "@dongdai: osd_inode_iteration is not preloading, waiting for event\n");
+		//CDEBUG(D_LFSCK, "@dongdai: osd_inode_iteration is not preloading, waiting for event\n");
 		l_wait_event(thread->t_ctl_waitq,
 			     !thread_is_running(thread) || !scrub->os_in_join,
 			     &lwi);
@@ -1381,17 +1394,12 @@ full:
 
 	noslot = false;
 	if (!preload) {
-		CDEBUG(D_LFSCK, "@dongdai: osd_inode_iteration is not preloading\n");
-
 		next = osd_scrub_next;
 		exec = osd_scrub_exec;
 		pos = &scrub->os_pos_current;
 		count = &scrub->os_new_checked;
 	} else {
 		struct osd_otable_cache *ooc = &dev->od_otable_it->ooi_cache;
-		
-		CDEBUG(D_LFSCK, "@dongdai: osd_inode_iteration is preloading\n");
-
 		next = osd_preload_next;
 		exec = osd_preload_exec;
 		pos = &ooc->ooc_pos_preload;
@@ -1402,10 +1410,6 @@ full:
 	while (*pos <= limit && *count < max) {
 		struct osd_idmap_cache *oic = NULL;
 		struct ldiskfs_group_desc *desc;
-
-		if (!preload) {
-			CDEBUG(D_LFSCK, "@dongdai: osd_inode_iteration (no preload) while loop: pos:%u, count:%u\n", (*pos), (*count));
-		}
 
 		param.bg = (*pos - 1) / LDISKFS_INODES_PER_GROUP(param.sb);
 		desc = ldiskfs_get_group_desc(param.sb, param.bg, NULL);
@@ -1520,8 +1524,10 @@ static int osd_scrub_main(void *args)
 	}
 
 	//@dongdai: a test run output is "check I/O Scrub Configuration os_full_speed = 0, os_partial_scan=0"
+	/*
 	CDEBUG(D_LFSCK, "@dongdai: check I/O Scrub Configuration os_full_speed = %d, os_partial_scan=%d\n",
 				scrub->os_full_speed, scrub->os_partial_scan);
+	*/
 
 	if (!scrub->os_full_speed && !scrub->os_partial_scan) {
 		struct l_wait_info lwi = { 0 };
@@ -2842,6 +2848,10 @@ again:
 		RETURN(1);
 	}
 
+	//osd_scrub_has_windw: 
+	//scrub->os_pos_current < ooc->ooc_pos_preload + 1024;
+	//occ_pos_preload: position for up layer LFSCK iteration pre-loading
+	//os_pos_current: inode position that current IO scrub is working on.
 	if (scrub->os_waiting && osd_scrub_has_window(scrub, ooc)) {
 		spin_lock(&scrub->os_lock);
 		scrub->os_waiting = 0;

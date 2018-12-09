@@ -876,6 +876,7 @@ static int lfsck_master_oit_engine(const struct lu_env *env,
 
 		lfsck->li_current_oit_processed = 1;
 
+		//@dongdai: this if should not execute in most cases.
 		if (!list_empty(&lfsck->li_list_lmv)) {
 			struct lfsck_lmv_unit *llu;
 
@@ -979,6 +980,7 @@ static int lfsck_master_oit_engine(const struct lu_env *env,
 		}
 
 		if (dt_object_exists(target)){
+			//this includes both layout and namespace execute OIT.
 		  rc = lfsck_exec_oit(env, lfsck, target);
 		}
 
@@ -1018,8 +1020,6 @@ checkpoint:
 			       iops->store(env, di));
 			RETURN(0);
 		}
-
-		//CDEBUG(D_LFSCK, "lfsck object table iteration on target " DFID", one loop takes: %lu microseconds\n", PFID(fid), microseconds() - js);
 	} while (rc == 0 || lfsck->li_di_dir != NULL);
 
 	RETURN(rc);
@@ -1099,7 +1099,7 @@ int lfsck_master_engine(void *args)
 		rc = 1;
 
 	//@dongdai:
-	CDEBUG(D_LFSCK, "LFSCK master engine finishes lfsck_master_oit_engine\n");
+	//CDEBUG(D_LFSCK, "LFSCK master engine finishes lfsck_master_oit_engine\n");
 
 	//@dongdai: it seems this function only call dio_it->stores()
 	lfsck_pos_fill(env, lfsck, &lfsck->li_pos_checkpoint, false);
@@ -1113,12 +1113,12 @@ int lfsck_master_engine(void *args)
 
 	if (!OBD_FAIL_CHECK(OBD_FAIL_LFSCK_CRASH)){
 		//@dongdai:
-		CDEBUG(D_LFSCK, "LFSCK master engine goes to branch lfsck_post()\n");
+		//CDEBUG(D_LFSCK, "LFSCK master engine goes to branch lfsck_post()\n");
 		rc = lfsck_post(env, lfsck, rc);
 	}
 	else{
 		//@dongdai:
-		CDEBUG(D_LFSCK, "LFSCK master engine goes to branch lfsck_close_dir()\n");
+		//CDEBUG(D_LFSCK, "LFSCK master engine goes to branch lfsck_close_dir()\n");
 		lfsck_close_dir(env, lfsck, rc);
 	}
 
@@ -1645,7 +1645,7 @@ int lfsck_assistant_engine(void *args)
 			list_del_init(&lar->lar_list);
 			lad->lad_prefetched--;
 			//@dongdai-thread
-			CDEBUG(D_LFSCK, "[athread remove %s] [lad prefetched: %d]\n", lad->lad_name, lad->lad_prefetched);
+			//CDEBUG(D_LFSCK, "[athread remove %s] [lad prefetched: %d]\n", lad->lad_name, lad->lad_prefetched);
 	
 			/* Wake up the main engine thread only when the list
 			 * is empty or half of the prefetched items have been
@@ -1783,7 +1783,7 @@ cleanup:
 		list_del_init(&lar->lar_list);
 		lad->lad_prefetched--;
 		//@dongdai-thread
-		CDEBUG(D_LFSCK, "[athread remove %s - cleanup] [lad prefetched: %d]\n", lad->lad_name, lad->lad_prefetched);
+		//CDEBUG(D_LFSCK, "[athread remove %s - cleanup] [lad prefetched: %d]\n", lad->lad_name, lad->lad_prefetched);
 		spin_unlock(&lad->lad_lock);
 		lao->la_req_fini(env, lar);
 		spin_lock(&lad->lad_lock);
