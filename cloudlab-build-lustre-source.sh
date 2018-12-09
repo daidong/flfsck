@@ -25,7 +25,8 @@ yum update -y e2fsprogs
 rpm -e lustre-client-2.9.0-1.el7.x86_64
 cd ~/lustre-release/
 yum -y localinstall {kmod-lustre-osd-ldiskfs,kmod-lustre,lustre,lustre-osd-ldiskfs-mount,lustre-iokit,lustre-tests,kmod-lustre-tests}-2.9.0-1.el7.centos.x86_64.rpm
-echo 'options lnet networks=tcp0(p2p2)' > /etc/modprobe.d/lustre.conf
+
+echo 'options lnet networks=tcp0(eth0)' > /etc/modprobe.d/lustre.conf
 depmod -a
 modprobe lustre
 lctl set_param debug=+lfsck
@@ -34,6 +35,18 @@ lctl set_param printk=+lfsck
 
 rpm -e kmod-lustre-osd-ldiskfs-2.9.0-1.el7.centos.x86_64 lustre-osd-ldiskfs-mount-2.9.0-1.el7.centos.x86_64 kmod-lustre-2.9.0-1.el7.centos.x86_64 kmod-lustre-tests-2.9.0-1.el7.centos.x86_64 lustre-2.9.0-1.el7.centos.x86_64 lustre-tests-2.9.0-1.el7.centos.x86_64 lustre-iokit-2.9.0-1.el7.centos.x86_64
 
+yum remove kmod-lustre kmod-lustre-osd-ldiskfs kmod-lustre-tests lustre lustre-iokit lustre-osd-ldiskfs-mount lustre-tests
+
+Installing:
+ kmod-lustre                    x86_64       2.9.0-1.el7.centos         /kmod-lustre-2.9.0-1.el7.centos.x86_64                     20 M
+ kmod-lustre-osd-ldiskfs        x86_64       2.9.0-1.el7.centos         /kmod-lustre-osd-ldiskfs-2.9.0-1.el7.centos.x86_64        1.9 M
+ kmod-lustre-tests              x86_64       2.9.0-1.el7.centos         /kmod-lustre-tests-2.9.0-1.el7.centos.x86_64              250 k
+ lustre                         x86_64       2.9.0-1.el7.centos         /lustre-2.9.0-1.el7.centos.x86_64                         2.3 M
+ lustre-iokit                   x86_64       2.9.0-1.el7.centos         /lustre-iokit-2.9.0-1.el7.centos.x86_64                   133 k
+ lustre-osd-ldiskfs-mount       x86_64       2.9.0-1.el7.centos         /lustre-osd-ldiskfs-mount-2.9.0-1.el7.centos.x86_64        28 k
+ lustre-tests                   x86_64       2.9.0-1.el7.centos         /lustre-tests-2.9.0-1.el7.centos.x86_64                    11 M
+
+Transaction Summary
 
 
 #
@@ -42,9 +55,9 @@ mkfs.lustre --fsname=lustre --mgs --mdt --reformat /dev/sdb
 mkdir -p /lustre
 mount -t lustre /dev/sdb /lustre
 
-sudo su
 //this should be the ID of your OST
-mkfs.lustre --fsname=lustre --mgsnode=10.10.1.1@tcp0 --ost --index=2 --reformat /dev/sdb
+sudo su
+mkfs.lustre --fsname=lustre --mgsnode=10.211.55.10@tcp0 --ost --index=1 --reformat /dev/sdb
 mkdir -p /lustre
 mount -t lustre /dev/sdb /lustre
 
